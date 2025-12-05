@@ -67,7 +67,6 @@ def handle_reqs(raw_reqs, ip):
             return "HTTP/1.0 404 Not Found\r\n\r\nImage Not Found".encode()
 
     fileName = path.lstrip('/')
-    print(fileName)
 
     if fileName == "" or fileName is None:
         fileName = "index.html"
@@ -88,7 +87,22 @@ def handle_reqs(raw_reqs, ip):
             else:
                 return response.encode()
         else:
-            return "HTTP/1.0 404 NOT FOUND\r\n\r\n".encode()
+            error_body = """
+            <html>
+                <head><title>404 Not Found</title></head>
+                <body style="font-family:sans-serif; text-align:center; padding:50px;">
+                    <h1 style="color:red;">404 Not Found</h1>
+                    <p>File: <b>{}</b> could not be found on this server.</p>
+                </body>
+            </html>
+            """.format(fileName)
+
+            response = "HTTP/1.0 404 Not Found\r\n"
+            response += "Content-Type: text/html\r\n"
+            response += f"Content-Length: {len(error_body)}\r\n"
+            response += "\r\n"
+
+            return response.encode() + error_body.encode()
 
     elif method in ['POST', 'PUT']:
         try:

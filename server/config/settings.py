@@ -10,6 +10,6 @@ VISITORS_DOC = os.path.join(BASE_DIRECTORY, 'server', 'models', 'visitors.json')
 
 
 # DoS Prevention - #6 in requirements doc.
-DDOS_LIMIT = 30
+DDOS_LIMIT = 100
 DDOS_WINDOW = 60
 
