@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yu-Gi-Oh! Database</title>
+    <style>
+        body { font-family: sans-serif; background-color: #222; color: white; padding: 20px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
+        input { padding: 10px; font-size: 16px; border-radius: 5px; border: none; width: 300px; }
+        button { padding: 10px 20px; background: #d32f2f; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        
+        #resultsArea {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px;
+        }
+
+        .card-display { 
+            display: flex; 
+            flex-direction: column; 
+            background: #333; 
+            border-radius: 10px; 
+            padding: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+            height: 100%; 
+        }
+
+        .card-img { 
+            width: 100%; 
+            height: auto; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+        }
+
+        .card-info { flex: 1; }
+        .card-title { margin-top: 0; font-size: 1.1em; color: #ffeb3b; margin-bottom: 10px; }
+        
+        
+        .card-text { 
+            font-size: 0.9em; 
+            line-height: 1.4; 
+            color: #ddd; 
+            height: 100px; 
+            overflow-y: auto; 
+        }
+        
+        
+        @media (max-width: 768px) {
+            #resultsArea { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align:center">Yu-Gi-Oh! Card Search</h1>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Enter card name (e.g., Dark Magician)...">
+        <button onclick="searchCard()">Search</button>
+    </div>
+
+    <div id="resultsArea"></div>
+</div>
+
+<script>
+
+    document.getElementById("searchInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            searchCard();
+        }
+    });
+
+    async function searchCard() {
+        const query = document.getElementById('searchInput').value;
+        const resultsArea = document.getElementById('resultsArea');
+        resultsArea.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Searching...</p>";
+
+        try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            resultsArea.innerHTML = "";
+
+            if (data.length === 0) {
+                resultsArea.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No cards found.</p>";
+                return;
+            }
+
+            data.forEach(card => {
+                const html = `
+                    <div class="card-display">
+                        <img src="/card_images/${card.image}" class="card-img" alt="${card.name}">
+                        <div class="card-info">
+                            <h2 class="card-title">${card.name}</h2>
+                            <div class="card-text">${card.desc}</div>
+                        </div>
+                    </div>
+                `;
+                resultsArea.innerHTML += html;
+            });
+
+        } catch (error) {
+            console.error(error);
+            resultsArea.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Error fetching data.</p>";
+        }
+    }
+</script>
+
+</body>
+</html>
