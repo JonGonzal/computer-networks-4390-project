@@ -29,3 +29,4 @@ Website to view Yu-Gi-Oh! cards using python's sockets library, some html with i
 
 While the server is running, go to this site via a webbrowser `http://127.0.0.1:8080`. Here you will find the webpage allowing you to search cards by name.
 
+<img width="1382" height="1470" alt="image" src="https://github.com/user-attachments/assets/0787294c-9472-4812-bbd6-a7aa627faf84" />
