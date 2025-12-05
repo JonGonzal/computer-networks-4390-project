@@ -1,10 +1,14 @@
 {
     "127.0.0.1_Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36": {
-        "count": 57,
-        "lasttime_visited": "2025-12-04 19:10:51.118614"
+        "count": 62,
+        "lasttime_visited": "2025-12-04 20:33:50.541261"
     },
     "127.0.0.1_curl/7.81.0": {
         "count": 1,
         "lasttime_visited": "2025-12-04 18:32:47.071132"
+    },
+    "127.0.0.1_TerminalClient/1.0": {
+        "count": 89,
+        "lasttime_visited": "2025-12-04 20:46:27.423759"
     }
 }
