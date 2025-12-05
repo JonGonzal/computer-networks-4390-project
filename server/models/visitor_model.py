@@ -30,5 +30,8 @@ def track_visitors(ip, user_agent):
     with lock:
         if key not in visitors:
             visitors[key] = {'count': 0, 'lasttime_visited': ''}
-            visitors[key]['count'] += 1
-            visitors[key]['lasttime_visited']= str(datetime.now())
+        visitors[key]['count'] += 1
+        visitors[key]['lasttime_visited']= str(datetime.now())
+
+        with open(settings.VISITORS_DOC, 'w') as f:
+            json.dump(visitors, f, indent=4)

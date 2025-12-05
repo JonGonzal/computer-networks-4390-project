@@ -26,22 +26,23 @@ def handle_reqs(raw_reqs, ip):
     visitor_model.track_visitors(ip, user_agent)
 
     fileName = path.lstrip('/')
-    if fileName == "":
+    print(fileName)
+
+    if fileName == "" or fileName is None:
         fileName = "index.html"
 
     filePath = os.path.join(settings.UPLOAD_DIRECTORY, fileName)
 
     # GET and HEAD 
-
     if method in ['GET', 'HEAD']:
-        if os.path.exists(fileName) and os.path.isfile(fileName):
-            with open(fileName, 'rb') as f:
+        if os.path.exists(filePath) and os.path.isfile(filePath):
+            with open(filePath, 'rb') as f:
                 content = f.read()
 
             response = "HTTP/1.0 200 OK\r\n"
-            response = f"Content-Length: {len(content)}\r\n\r\n"
+            response += f"Content-Length: {len(content)}\r\n\r\n"
 
-            if method = 'GET':
+            if method == 'GET':
                 return response.encode() + content
             else:
                 return response.encode()
