@@ -1,4 +1,6 @@
 import os
+import json
+import sqlite3 
 from server.config import settings
 from server.models import visitor_model
 
@@ -24,6 +26,45 @@ def handle_reqs(raw_reqs, ip):
 
     
     visitor_model.track_visitors(ip, user_agent)
+
+    if path.startswith("/api/search"):
+        try:
+            if '?q=' not in path:
+                return "HTTP/1.0 400 Bad Request\r\n\r\nMissing query".encode()
+
+            query_parts = path.split('?q=')
+            search_term = query_parts[1].replace('%20', ' ').replace('+', ' ')
+
+            db_path = os.path.join(settings.BASE_DIRECTORY, 'server', 'models', 'yugioh.db')
+
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT Card_name, \"Other names\", Image_name FROM yugioh WHERE Card_name LIKE ? LIMIT 10", (f"%{search_term}%",))
+                rows = cursor.fetchall()
+
+            results = [{"name": r[0], "desc": r[1], "image": r[2]} for r in rows]
+            json_resp = json.dumps(results)
+            print(json_resp)
+
+            return (f"HTTP/1.0 200 OK\r\nContent-Type: application/json\r\nContent-Length: {len(json_resp)}\r\n\r\n{json_resp}").encode()
+        except Exception as e:
+            print(f"ERROR - {e}")
+            return f"HTTP/1.0 500 Error\r\n\r\n{str(e)}".encode()
+
+
+    if path.startswith("/card_images/"):
+        image_name = path.split("/")[-1]
+        
+        image_path = os.path.join(settings.BASE_DIRECTORY, 'database', 'Yugi_images', image_name)
+        print(image_path)
+        
+        if os.path.exists(image_path):
+            with open(image_path, 'rb') as f:
+                img_data = f.read()
+            header = f"HTTP/1.0 200 OK\r\nContent-Type: image/jpeg\r\nContent-Length: {len(img_data)}\r\n\r\n"
+            return header.encode() + img_data
+        else:
+            return "HTTP/1.0 404 Not Found\r\n\r\nImage Not Found".encode()
 
     fileName = path.lstrip('/')
     print(fileName)
